@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Hub | Security Intelligence & Diagnostics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0a0f1d',
+                            card: '#111827',
+                            border: '#1f293d',
+                            accent: '#00f0ff',
+                            green: '#00ff66',
+                            purple: '#a855f7',
+                            red: '#ff0055',
+                            yellow: '#eab308'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        glow: '0 0 15px rgba(0, 240, 255, 0.25)',
+                        'glow-green': '0 0 15px rgba(0, 255, 102, 0.25)',
+                        'glow-red': '0 0 15px rgba(255, 0, 85, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #060913;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Grid background pattern */
+        .bg-grid {
+            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        /* Custom Glowing Elements */
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+        .text-glow {
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0f1d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+        /* Scanline FX */
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 240, 255, 0.05) 50%,
+                rgba(0, 240, 255, 0.05)
+            );
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="bg-grid min-h-screen flex flex-col justify-between selection:bg-cyber-accent selection:text-black relative">
+    <div class="fixed inset-0 scanline pointer-events-none z-50 opacity-40"></div>
+
+    <header class="sticky top-0 z-40 bg-cyber-bg/90 backdrop-blur-md border-b border-cyber-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('news')">
+                    <div class="p-2 bg-cyan-950/80 rounded-lg border border-cyber-accent/40 text-cyber-accent glow-cyan">
+                        <i class="fa-solid me-0 fa-shield-halved text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-wider text-white code-font">CYBER<span class="text-cyber-accent">GUARD</span></span>
+                        <span class="hidden sm:inline-block text-xs px-2 py-0.5 ml-2 bg-cyber-accent/10 text-cyber-accent rounded-full border border-cyber-accent/30 font-mono">v2.4.0</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-1">
+                    <button onclick="switchTab('news')" id="tab-btn-news" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 border border-transparent text-gray-300 hover:text-white hover:bg-cyber-border/50">
+                        <i class="fa-solid fa-newspaper text-cyber-accent"></i>
+                        <span>Threat Intel Feed</span>
+                    </button>
+                    <button onclick="switchTab('scanner')" id="tab-btn-scanner" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 border border-transparent text-gray-300 hover:text-white hover:bg-cyber-border/50">
+                        <i class="fa-solid fa-radar text-cyber-accent"></i>
+                        <span>Email Diagnostic</span>
+                    </button>
+                    <button onclick="switchTab('generator')" id="tab-btn-generator" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 border border-transparent text-gray-300 hover:text-white hover:bg-cyber-border/50">
+                        <i class="fa-solid fa-key text-cyber-accent"></i>
+                        <span>PassForge</span>
+                    </button>
+                    <button onclick="switchTab('about')" id="tab-btn-about" class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 border border-transparent text-gray-300 hover:text-white hover:bg-cyber-border/50">
+                        <i class="fa-solid fa-circle-info text-cyber-accent"></i>
+                        <span>Mission / About</span>
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-cyber-border focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cyber-card border-b border-cyber-border px-4 pt-2 pb-4 space-y-1">
+            <button onclick="switchTab('news')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-cyber-border hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-newspaper text-cyber-accent w-6"></i>
+                <span>Threat Intel Feed</span>
+            </button>
+            <button onclick="switchTab('scanner')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-cyber-border hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-radar text-cyber-accent w-6"></i>
+                <span>Email Diagnostic</span>
+            </button>
+            <button onclick="switchTab('generator')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-cyber-border hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-key text-cyber-accent w-6"></i>
+                <span>PassForge</span>
+            </button>
+            <button onclick="switchTab('about')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-cyber-border hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-circle-info text-cyber-accent w-6"></i>
+                <span>Mission / About</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <section id="section-news" class="tab-content">
+            <!-- News Header & Controls -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-rss text-cyber-accent"></i> Hacker News & Threat Radar
+                    </h1>
+                    <p class="text-gray-400 text-sm mt-1">Real-time cybersecurity news, vulnerability disclosures, and breach alerts.</p>
+                </div>
+                
+                <!-- Search and Filters -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative min-w-[240px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                        <input type="text" id="news-search" placeholder="Search threats, CVEs..." 
+                            class="w-full pl-9 pr-4 py-2 bg-cyber-card border border-cyber-border rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyber-accent">
+                    </div>
+                    <select id="news-filter" class="bg-cyber-card border border-cyber-border rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-accent">
+                        <option value="ALL">All Categories</option>
+                        <option value="Vulnerability">Vulnerabilities</option>
+                        <option value="Ransomware">Ransomware</option>
+                        <option value="Data Breach">Data Breaches</option>
+                        <option value="Malware">Malware & Botnets</option>
+                        <option value="Policy">Policy & Advisory</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Articles Grid -->
+            <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Articles injected dynamically via JS -->
+            </div>
+        </section>
+
+        <section id="section-scanner" class="tab-content hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <div class="inline-block p-3 bg-cyber-accent/10 border border-cyber-accent/30 rounded-2xl mb-3">
+                        <i class="fa-solid fa-shield-virus text-3xl text-cyber-accent"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white">Email & Domain Risk Diagnostic</h1>
+                    <p class="text-gray-400 text-sm mt-2 max-w-xl mx-auto">Analyze an email address or domain against simulated database breaches, credential leaks, and domain reputation vectors.</p>
+                </div>
+
+                <!-- Scanner Card Form -->
+                <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6 sm:p-8 shadow-xl mb-8 relative overflow-hidden">
+                    <form id="scanner-form" class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-300">Target Email or Domain</label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-at absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                                <input type="text" id="scanner-input" required placeholder="e.g. user@targetcorp.com or domain.com" 
+                                    class="w-full pl-11 pr-4 py-3 bg-cyber-bg border border-cyber-border rounded-xl text-white code-font placeholder-gray-600 focus:outline-none focus:border-cyber-accent focus:ring-1 focus:ring-cyber-accent">
+                            </div>
+                            <button type="submit" id="scan-submit-btn" class="px-6 py-3 bg-cyber-accent text-black font-semibold rounded-xl hover:bg-cyan-300 transition shadow-glow flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Run Diagnostics</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 flex items-center gap-1.5">
+                            <i class="fa-solid fa-lock text-cyber-green"></i> 100% Client-Side Privacy: Inputs are processed simulated-only for educational analysis and never logged.
+                        </p>
+                    </form>
+
+                    <!-- Scanning Loader State -->
+                    <div id="scanner-loading" class="hidden my-8 py-8 text-center border-t border-cyber-border">
+                        <div class="inline-block relative w-16 h-16 mb-4">
+                            <div class="absolute inset-0 border-4 border-cyber-accent/20 rounded-full"></div>
+                            <div class="absolute inset-0 border-4 border-cyber-accent rounded-full border-t-transparent animate-spin"></div>
+                            <i class="fa-solid fa-microchip text-cyber-accent absolute inset-0 m-auto h-fit w-fit"></i>
+                        </div>
+                        <p class="text-cyber-accent font-mono text-sm font-semibold tracking-wider animate-pulse" id="scanner-status-text">
+                            INITIALIZING BREACH DATABASE SEARCH...
+                        </p>
+                        <div class="w-full bg-cyber-bg h-2 rounded-full mt-4 max-w-md mx-auto overflow-hidden border border-cyber-border">
+                            <div id="scan-progress-bar" class="bg-cyber-accent h-full w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnostic Report Result Container -->
+                <div id="scanner-report" class="hidden space-y-6">
+                    <!-- Report Header -->
+                    <div class="bg-cyber-card border rounded-2xl p-6 relative overflow-hidden" id="report-header-box">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <span class="text-xs font-mono uppercase tracking-widest text-gray-400">Diagnostic Summary For</span>
+                                <h2 class="text-2xl font-bold font-mono text-white mt-0.5" id="report-target-name">user@example.com</h2>
+                                <p class="text-xs text-gray-400 mt-1" id="report-timestamp">Scan Time: --</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-400 font-mono">SEVERITY:</span>
+                                <span id="report-severity-badge" class="px-4 py-1.5 rounded-full font-bold text-sm uppercase tracking-wide code-font border">
+                                    --
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Findings & Recommended Steps Split -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Detected Exposure -->
+                        <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-cyber-yellow"></i>
+                                Discovered Exposure Points
+                            </h3>
+                            <ul class="space-y-3" id="report-findings-list">
+                                <!-- Injected dynamically -->
+                            </ul>
+                        </div>
+
+                        <!-- Recommendations -->
+                        <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-cyber-green"></i>
+                                Recommended Next Steps
+                            </h3>
+                            <div class="space-y-3" id="report-recommendations-list">
+                                <!-- Injected dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-generator" class="tab-content hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <div class="inline-block p-3 bg-cyber-accent/10 border border-cyber-accent/30 rounded-2xl mb-3">
+                        <i class="fa-solid fa-key text-3xl text-cyber-accent"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white">PassForge Strong Key Generator</h1>
+                    <p class="text-gray-400 text-sm mt-2 max-w-xl mx-auto">Generate entropy-tested, cryptographic passwords designed to withstand dictionary attacks and brute-force cracking.</p>
+                </div>
+
+                <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6 sm:p-8 shadow-xl">
+                    <!-- Password Output Box -->
+                    <div class="mb-6">
+                        <label class="block text-xs font-mono uppercase text-gray-400 mb-2">Generated Password Output</label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="pass-output" readonly 
+                                class="w-full bg-cyber-bg border border-cyber-border rounded-xl py-4 pl-4 pr-28 text-lg sm:text-xl code-font text-cyber-accent font-bold tracking-wider focus:outline-none">
+                            <button id="copy-btn" onclick="copyPassword()" class="absolute right-2 px-4 py-2 bg-cyber-accent/20 hover:bg-cyber-accent hover:text-black border border-cyber-accent/50 text-cyber-accent text-sm font-semibold rounded-lg transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-copy"></i>
+                                <span id="copy-text">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Strength Indicator Bar -->
+                    <div class="mb-8 p-4 bg-cyber-bg/60 border border-cyber-border rounded-xl">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-mono text-gray-400">ENTROPY STRENGTH</span>
+                            <span id="strength-label" class="text-xs font-mono font-bold text-cyber-green uppercase">VERY STRONG</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                            <div id="strength-meter-bar" class="h-full w-full bg-cyber-green transition-all duration-300"></div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-400 flex justify-between font-mono">
+                            <span id="strength-time-estimate">Time to crack: ~10^18 years</span>
+                            <span id="entropy-score">Bits: 84 bits</span>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Left Column: Length and Mode -->
+                        <div class="space-y-6">
+                            <!-- Password Length Slider -->
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-sm font-medium text-gray-200">Character Length</label>
+                                    <span id="length-display" class="text-lg font-bold code-font text-cyber-accent">20</span>
+                                </div>
+                                <input type="range" id="pass-length" min="8" max="64" value="20" 
+                                    class="w-full h-2 bg-cyber-bg rounded-lg appearance-none cursor-pointer accent-cyber-accent">
+                            </div>
+
+                            <!-- Mode Toggle -->
+                            <div>
+                                <label class="text-sm font-medium text-gray-200 block mb-2">Generation Style</label>
+                                <div class="grid grid-cols-2 gap-2 p-1 bg-cyber-bg rounded-xl border border-cyber-border">
+                                    <button type="button" id="mode-random-btn" onclick="setGenMode('random')" class="py-2 text-xs font-semibold rounded-lg bg-cyber-card text-cyber-accent border border-cyber-accent/40">
+                                        Random Cryptographic
+                                    </button>
+                                    <button type="button" id="mode-readable-btn" onclick="setGenMode('readable')" class="py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white">
+                                        Memorable / Readable
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Character Sets Switch -->
+                        <div class="space-y-4">
+                            <label class="text-sm font-medium text-gray-200 block">Include Character Sets</label>
+                            
+                            <label class="flex items-center justify-between p-3 bg-cyber-bg rounded-xl border border-cyber-border cursor-pointer hover:border-gray-600">
+                                <span class="text-sm text-gray-300 flex items-center gap-2">
+                                    <span class="font-mono text-cyber-accent font-bold">A-Z</span> Uppercase Letters
+                                </span>
+                                <input type="checkbox" id="chk-uppercase" checked class="w-4 h-4 accent-cyber-accent rounded cursor-pointer">
+                            </label>
+
+                            <label class="flex items-center justify-between p-3 bg-cyber-bg rounded-xl border border-cyber-border cursor-pointer hover:border-gray-600">
+                                <span class="text-sm text-gray-300 flex items-center gap-2">
+                                    <span class="font-mono text-cyber-accent font-bold">a-z</span> Lowercase Letters
+                                </span>
+                                <input type="checkbox" id="chk-lowercase" checked class="w-4 h-4 accent-cyber-accent rounded cursor-pointer">
+                            </label>
+
+                            <label class="flex items-center justify-between p-3 bg-cyber-bg rounded-xl border border-cyber-border cursor-pointer hover:border-gray-600">
+                                <span class="text-sm text-gray-300 flex items-center gap-2">
+                                    <span class="font-mono text-cyber-accent font-bold">0-9</span> Numbers
+                                </span>
+                                <input type="checkbox" id="chk-numbers" checked class="w-4 h-4 accent-cyber-accent rounded cursor-pointer">
+                            </label>
+
+                            <label class="flex items-center justify-between p-3 bg-cyber-bg rounded-xl border border-cyber-border cursor-pointer hover:border-gray-600">
+                                <span class="text-sm text-gray-300 flex items-center gap-2">
+                                    <span class="font-mono text-cyber-accent font-bold">!@#</span> Special Symbols
+                                </span>
+                                <input type="checkbox" id="chk-symbols" checked class="w-4 h-4 accent-cyber-accent rounded cursor-pointer">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Regenerate Button -->
+                    <div class="mt-8">
+                        <button onclick="generatePassword()" class="w-full py-4 bg-cyber-accent text-black font-bold rounded-xl hover:bg-cyan-300 transition shadow-glow flex items-center justify-center space-x-2 text-base">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                            <span>Generate New Password</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-about" class="tab-content hidden">
+            <div class="max-w-4xl mx-auto space-y-8">
+                <!-- Hero About Banner -->
+                <div class="bg-cyber-card border border-cyber-border rounded-2xl p-8 text-center relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-cyber-accent/5 rounded-full blur-2xl"></div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-cyber-accent bg-cyber-accent/10 px-3 py-1 rounded-full border border-cyber-accent/30">
+                        Mission Directive
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mt-4">Democratizing Cyber Security & Defense</h1>
+                    <p class="text-gray-400 mt-3 max-w-2xl mx-auto leading-relaxed">
+                        CyberGuard Hub was engineered to provide individual users and developers with accessible threat intelligence, password entropy generators, and risk assessment utilities.
+                    </p>
+                </div>
+
+                <!-- Pillar Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                        <div class="w-12 h-12 bg-cyber-accent/10 border border-cyber-accent/30 rounded-xl flex items-center justify-center text-cyber-accent mb-4">
+                            <i class="fa-solid fa-eye text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Threat Awareness</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Staying informed on zero-day vulnerabilities and ransomware waves is the first line of active digital defense.
+                        </p>
+                    </div>
+
+                    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                        <div class="w-12 h-12 bg-cyber-green/10 border border-cyber-green/30 rounded-xl flex items-center justify-center text-cyber-green mb-4">
+                            <i class="fa-solid fa-user-shield text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Privacy First</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            All interactive utilities execute client-side in the browser. Zero telemetry or user queries are logged or shared.
+                        </p>
+                    </div>
+
+                    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+                        <div class="w-12 h-12 bg-cyber-purple/10 border border-cyber-purple/30 rounded-xl flex items-center justify-center text-cyber-purple mb-4">
+                            <i class="fa-solid fa-graduation-cap text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Actionable Defense</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Rather than simply reporting alerts, we provide concrete, practical steps to mitigate credential exposure.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Technical FAQ / Disclaimers -->
+                <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6 space-y-4">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-cyber-yellow"></i>
+                        Educational & Legal Disclaimer
+                    </h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        The tools provided on CyberGuard Hub—including the Email & Domain Scanner and Password Generator—are intended exclusively for personal risk evaluation, security research, and educational purposes. The email diagnostic utilizes heuristic patterns and simulated database lookups to illustrate potential breach implications.
+                    </p>
+                    <div class="pt-2 border-t border-cyber-border text-xs text-gray-500 font-mono">
+                        Deployment Target: Cloudflare Pages / Workers compatible static web portal.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="news-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-cyber-card border border-cyber-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <button onclick="closeNewsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div id="modal-content">
+                <!-- Modal details injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-cyber-card border border-cyber-accent text-white px-4 py-3 rounded-xl shadow-glow opacity-0 transition-opacity duration-300 pointer-events-none flex items-center space-x-2 z-50">
+        <i class="fa-solid fa-circle-check text-cyber-green"></i>
+        <span id="toast-message" class="text-sm font-medium">Notification</span>
+    </div>
+
+    <script>
+        /* Mock News Data */
+        const newsArticles = [
+            {
+                id: 1,
+                title: "Critical Zero-Day Vulnerability Discovered in Core Web Infrastructure",
+                category: "Vulnerability",
+                date: "2026-09-22",
+                author: "CyberGuard Intel Team",
+                summary: "Security researchers have identified an unpatched remote code execution vulnerability impacting major cloud web servers.",
+                content: `<p class="mb-4">A critical zero-day vulnerability (tracked as CVE-2026-8891) has been identified in widely deployed high-performance HTTP web servers. The flaw allows remote attackers to execute arbitrary memory injection payloads without prior authentication.</p>
+                <p class="mb-4">Infrastructure teams are strongly advised to implement strict Web Application Firewall (WAF) rate limits and update edge proxy definitions immediately.</p>
+                <h4 class="font-bold text-white mb-2">Mitigation Recommendations:</h4>
+                <ul class="list-disc pl-5 space-y-1 text-gray-300">
+                    <li>Isolate exposed administrative interfaces behind VPN or Zero Trust tunnels.</li>
+                    <li>Audit incoming headers for anomalous buffer lengths.</li>
+                    <li>Apply vendor patch release candidate v4.12.3 as soon as distributed.</li>
+                </ul>`
+            },
+            {
+                id: 2,
+                title: "Global Ransomware Syndicate Targets Enterprise Supply Chains",
+                category: "Ransomware",
+                date: "2026-09-20",
+                author: "Threat Radar",
+                summary: "A coordinated ransomware campaign is leveraging compromised vendor credentials to deploy dual-stage encryption payloads.",
+                content: `<p class="mb-4">Cybersecurity agencies have issued a joint advisory regarding a rising threat actor group targeting mid-market logistics and SaaS providers.</p>
+                <p class="mb-4">The threat actors gain initial access through spear-phishing emails targeting third-party contractor credentials, followed by rapid lateral movement using legitimate administrative scripts.</p>
+                <h4 class="font-bold text-white mb-2">Key Indicators of Compromise (IoCs):</h4>
+                <ul class="list-disc pl-5 space-y-1 text-gray-300">
+                    <li>Unusual PowerShell executions via scheduled tasks.</li>
+                    <li>Exfiltration spikes to encrypted cloud storage endpoints.</li>
+                    <li>Enforce mandatory multi-factor authentication (MFA) across all vendor accounts.</li>
+                </ul>`
+            },
+            {
+                id: 3,
+                title: "Database Breach Exposes 4.2 Million User Credentials",
+                category: "Data Breach",
+                date: "2026-09-18",
+                author: "Breach Monitor",
+                summary: "An unsecured Elasticsearch cluster leaked hashed passwords, email addresses, and API key tokens for millions of accounts.",
+                content: `<p class="mb-4">Over 4 million account records were discovered exposed on an unauthenticated database index. While password hashes utilized bcrypt with adequate work factors, plain-text API credentials were found in audit log entries.</p>
+                <p class="mb-4">Impacted users should immediately rotate active API tokens and audit recent account activity logs for suspicious authorizations.</p>`
+            },
+            {
+                id: 4,
+                title: "New AI-Driven Phishing Framework Bypasses Legacy Email Filters",
+                category: "Malware",
+                date: "2026-09-15",
+                author: "SecOps Security",
+                summary: "Automated LLM-driven phishing campaigns are crafting personalized context aware emails at unprecedented scale.",
+                content: `<p class="mb-4">Security analysts have uncovered an automated phishing kit capable of synthesizing contextually accurate corporate emails using public social media metadata.</p>
+                <p class="mb-4">Organizations are urged to transition from traditional domain reputation filtering toward behavior-based threat analysis and security key (FIDO2) authentication.</p>`
+            },
+            {
+                id: 5,
+                title: "NIST Releases Updated Guidelines for Quantum-Resistant Encryption",
+                category: "Policy",
+                date: "2026-09-10",
+                author: "Crypto Analysis",
+                summary: "New standards aim to prepare governmental and private infrastructure for post-quantum cryptographic security requirements.",
+                content: `<p class="mb-4">The National Institute of Standards and Technology (NIST) has finalized its standardized post-quantum cryptographic algorithms, emphasizing lattice-based encryption algorithms for future transport layer security.</p>`
+            }
+        ];
+
+        /* State management */
+        let currentGenMode = 'random'; // 'random' or 'readable'
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNewsArticles(newsArticles);
+            generatePassword();
+            setupEventListeners();
+        });
+
+        /* Tab Switcher Logic */
+        function switchTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show target section
+            const targetSection = document.getElementById(`section-${tabId}`);
+            if(targetSection) targetSection.classList.remove('hidden');
+
+            // Update Tab Nav Button Highlights
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-cyber-accent/10', 'text-cyber-accent', 'border-cyber-accent/40');
+                btn.classList.add('text-gray-300', 'border-transparent');
+            });
+
+            const activeTabBtn = document.getElementById(`tab-btn-${tabId}`);
+            if(activeTabBtn) {
+                activeTabBtn.classList.add('bg-cyber-accent/10', 'text-cyber-accent', 'border-cyber-accent/40');
+                activeTabBtn.classList.remove('text-gray-300', 'border-transparent');
+            }
+
+            // Close Mobile Nav Menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        function renderNewsArticles(articles) {
+            const grid = document.getElementById('articles-grid');
+            grid.innerHTML = '';
+
+            if (articles.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <i class="fa-solid fa-magnifying-glass text-3xl mb-2"></i>
+                        <p>No cybersecurity news articles matched your query.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            articles.forEach(article => {
+                const badgeColor = getCategoryColor(article.category);
+                const cardHtml = `
+                    <div class="bg-cyber-card border border-cyber-border rounded-2xl p-6 flex flex-col justify-between hover:border-cyber-accent/50 transition duration-300">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-md ${badgeColor.bg} ${badgeColor.text} border ${badgeColor.border}">
+                                    ${article.category}
+                                </span>
+                                <span class="text-xs text-gray-500 font-mono">${article.date}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 hover:text-cyber-accent cursor-pointer transition" onclick="openNewsModal(${article.id})">
+                                ${article.title}
+                            </h3>
+                            <p class="text-sm text-gray-400 line-clamp-3 mb-4">
+                                ${article.summary}
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-cyber-border flex justify-between items-center">
+                            <span class="text-xs text-gray-500 font-mono"><i class="fa-solid fa-user-pen mr-1"></i>${article.author}</span>
+                            <button onclick="openNewsModal(${article.id})" class="text-xs font-semibold text-cyber-accent hover:underline flex items-center space-x-1">
+                                <span>Read Full Intel</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        function getCategoryColor(category) {
+            switch(category) {
+                case 'Vulnerability': return { bg: 'bg-red-950/40', text: 'text-red-400', border: 'border-red-800/40' };
+                case 'Ransomware': return { bg: 'bg-purple-950/40', text: 'text-purple-400', border: 'border-purple-800/40' };
+                case 'Data Breach': return { bg: 'bg-yellow-950/40', text: 'text-yellow-400', border: 'border-yellow-800/40' };
+                case 'Malware': return { bg: 'bg-pink-950/40', text: 'text-pink-400', border: 'border-pink-800/40' };
+                default: return { bg: 'bg-cyan-950/40', text: 'text-cyan-400', border: 'border-cyan-800/40' };
+            }
+        }
+
+        function openNewsModal(id) {
+            const article = newsArticles.find(a => a.id === id);
+            if (!article) return;
+
+            const modalContent = document.getElementById('modal-content');
+            const badge = getCategoryColor(article.category);
+
+            modalContent.innerHTML = `
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-md ${badge.bg} ${badge.text} border ${badge.border}">
+                        ${article.category}
+                    </span>
+                    <span class="text-xs text-gray-500 font-mono">${article.date}</span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-4">${article.title}</h2>
+                <div class="text-xs text-gray-400 mb-6 pb-4 border-b border-cyber-border font-mono">
+                    Author: ${article.author} | Classification: Public Threat Advisory
+                </div>
+                <div class="text-gray-300 text-sm leading-relaxed space-y-3">
+                    ${article.content}
+                </div>
+                <div class="mt-8 pt-4 border-t border-cyber-border flex justify-end">
+                    <button onclick="closeNewsModal()" class="px-4 py-2 bg-cyber-border text-white text-sm font-semibold rounded-lg hover:bg-gray-700">
+                        Close Article
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('news-modal').classList.remove('hidden');
+        }
+
+        function closeNewsModal() {
+            document.getElementById('news-modal').classList.add('hidden');
+        }
+
+        function setupEventListeners() {
+            // Search filter for news
+            document.getElementById('news-search').addEventListener('input', filterNews);
+            document.getElementById('news-filter').addEventListener('change', filterNews);
+
+            // Scanner Form
+            document.getElementById('scanner-form').addEventListener('submit', handleScanSubmit);
+
+            // Password Generator Controls
+            const passLengthSlider = document.getElementById('pass-length');
+            passLengthSlider.addEventListener('input', (e) => {
+                document.getElementById('length-display').textContent = e.target.value;
+                generatePassword();
+            });
+
+            ['chk-uppercase', 'chk-lowercase', 'chk-numbers', 'chk-symbols'].forEach(id => {
+                document.getElementById(id).addEventListener('change', generatePassword);
+            });
+
+            // Mobile menu toggle
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+        }
+
+        function filterNews() {
+            const query = document.getElementById('news-search').value.toLowerCase();
+            const category = document.getElementById('news-filter').value;
+
+            const filtered = newsArticles.filter(article => {
+                const matchesQuery = article.title.toLowerCase().includes(query) || article.summary.toLowerCase().includes(query);
+                const matchesCategory = category === 'ALL' || article.category === category;
+                return matchesQuery && matchesCategory;
+            });
+
+            renderNewsArticles(filtered);
+        }
+
+        function handleScanSubmit(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('scanner-input').value.trim();
+            if (!inputVal) return;
+
+            const submitBtn = document.getElementById('scan-submit-btn');
+            const loader = document.getElementById('scanner-loading');
+            const report = document.getElementById('scanner-report');
+            const progressBar = document.getElementById('scan-progress-bar');
+            const statusText = document.getElementById('scanner-status-text');
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50');
+            report.classList.add('hidden');
+            loader.classList.remove('hidden');
+
+            const steps = [
+                { progress: '25%', text: 'QUERYING GLOBAL BREACH REPOSITORIES...' },
+                { progress: '55%', text: 'ANALYZING DOMAIN MX & SPF REGISTRATION...' },
+                { progress: '85%', text: 'COMPUTING THREAT VECTOR EXPOSURE SCORE...' },
+                { progress: '100%', text: 'SCAN COMPLETE. GENERATING REPORT...' }
+            ];
+
+            let stepIdx = 0;
+            const interval = setInterval(() => {
+                if(stepIdx < steps.length) {
+                    progressBar.style.width = steps[stepIdx].progress;
+                    statusText.textContent = steps[stepIdx].text;
+                    stepIdx++;
+                } else {
+                    clearInterval(interval);
+                    loader.classList.add('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                    displayScanResult(inputVal);
+                }
+            }, 500);
+        }
+
+        function displayScanResult(target) {
+            const report = document.getElementById('scanner-report');
+            document.getElementById('report-target-name').textContent = target;
+            document.getElementById('report-timestamp').textContent = `Scan Executed: ${new Date().toLocaleString()}`;
+
+            // Generate deterministic result based on input length/hash
+            const hash = target.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const severityLevel = hash % 4; // 0: Safe, 1: Low/Medium, 2: High, 3: Critical
+
+            const badge = document.getElementById('report-severity-badge');
+            const headerBox = document.getElementById('report-header-box');
+            const findingsList = document.getElementById('report-findings-list');
+            const recsList = document.getElementById('report-recommendations-list');
+
+            findingsList.innerHTML = '';
+            recsList.innerHTML = '';
+
+            let severityData = {};
+
+            if (severityLevel === 0) {
+                severityData = {
+                    title: 'SAFE',
+                    color: 'bg-green-950/80 text-cyber-green border-cyber-green/50',
+                    boxBorder: 'border-cyber-green/30',
+                    findings: [
+                        { icon: 'fa-circle-check text-cyber-green', title: 'No Credential Leaks Found', desc: 'Target not listed in known public breach compilations.' },
+                        { icon: 'fa-shield-halved text-cyber-green', title: 'Secure Mail Configuration', desc: 'SPF and DMARC enforcement signatures verified.' }
+                    ],
+                    recs: [
+                        'Maintain standard password rotation schedules.',
+                        'Ensure hardware FIDO2 or app-based 2FA remains enabled.',
+                        'Periodically verify authorized third-party app permissions.'
+                    ]
+                };
+            } else if (severityLevel === 1) {
+                severityData = {
+                    title: 'MEDIUM RISK',
+                    color: 'bg-yellow-950/80 text-cyber-yellow border-cyber-yellow/50',
+                    boxBorder: 'border-cyber-yellow/30',
+                    findings: [
+                        { icon: 'fa-triangle-exclamation text-cyber-yellow', title: 'Historical Breach Record', desc: 'Found in 1 archived third-party database breach from 2022.' },
+                        { icon: 'fa-circle-exclamation text-cyber-yellow', title: 'Legacy Password Hash exposed', desc: 'Old MD5/SHA1 encrypted credentials present in raw dumps.' }
+                    ],
+                    recs: [
+                        'Immediately update passwords on services associated with this account.',
+                        'Enable Multi-Factor Authentication (2FA) across all email logins.',
+                        'Inspect active sessions in your email client and revoke unknown devices.'
+                    ]
+                };
+            } else if (severityLevel === 2) {
+                severityData = {
+                    title: 'HIGH RISK',
+                    color: 'bg-orange-950/80 text-orange-400 border-orange-500/50',
+                    boxBorder: 'border-orange-500/30',
+                    findings: [
+                        { icon: 'fa-circle-exclamation text-orange-400', title: 'Multiple Breach Exposures', desc: 'Identified in 3 distinct corporate database leaks.' },
+                        { icon: 'fa-bug text-orange-400', title: 'Possible Phishing Target', desc: 'Target email active on commercial marketing and breach lists.' }
+                    ],
+                    recs: [
+                        'Change email account password immediately using PassForge.',
+                        'Review recovery phone numbers and backup email addresses.',
+                        'Audit bank accounts or critical services tied to this email address.'
+                    ]
+                };
+            } else {
+                severityData = {
+                    title: 'CRITICAL SEVERITY',
+                    color: 'bg-red-950/80 text-cyber-red border-cyber-red/50 shadow-glow-red',
+                    boxBorder: 'border-cyber-red/50',
+                    findings: [
+                        { icon: 'fa-radiation text-cyber-red', title: 'Active Pastebin & Breach Listing', desc: 'Plain-text credentials actively indexed in darkweb forums.' },
+                        { icon: 'fa-skull-crossbones text-cyber-red', title: 'API Key / Session Token Leak', desc: 'Associated authentication tokens exposed in public repo commits.' }
+                    ],
+                    recs: [
+                        'URGENT: Change primary password and enforce hardware 2FA.',
+                        'Invalidate all active web sessions, API tokens, and OAuth authorizations.',
+                        'Notify security administrator if this domain belongs to an enterprise organization.'
+                    ]
+                };
+            }
+
+            badge.className = `px-4 py-1.5 rounded-full font-bold text-sm uppercase tracking-wide code-font border ${severityData.color}`;
+            badge.textContent = severityData.title;
+            headerBox.className = `bg-cyber-card border ${severityData.boxBorder} rounded-2xl p-6 relative overflow-hidden`;
+
+            severityData.findings.forEach(item => {
+                findingsList.innerHTML += `
+                    <li class="flex items-start space-x-3 p-3 bg-cyber-bg/50 rounded-xl border border-cyber-border">
+                        <i class="fa-solid ${item.icon} text-lg mt-0.5"></i>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white">${item.title}</h4>
+                            <p class="text-xs text-gray-400 mt-0.5">${item.desc}</p>
+                        </div>
+                    </li>
+                `;
+            });
+
+            severityData.recs.forEach(rec => {
+                recsList.innerHTML += `
+                    <div class="flex items-start space-x-3 p-3 bg-cyber-bg/50 rounded-xl border border-cyber-border">
+                        <i class="fa-solid fa-square-check text-cyber-accent text-base mt-0.5"></i>
+                        <p class="text-xs text-gray-300 leading-relaxed">${rec}</p>
+                    </div>
+                `;
+            });
+
+            report.classList.remove('hidden');
+            report.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setGenMode(mode) {
+            currentGenMode = mode;
+            const randBtn = document.getElementById('mode-random-btn');
+            const readBtn = document.getElementById('mode-readable-btn');
+
+            if(mode === 'random') {
+                randBtn.className = 'py-2 text-xs font-semibold rounded-lg bg-cyber-card text-cyber-accent border border-cyber-accent/40';
+                readBtn.className = 'py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white';
+            } else {
+                readBtn.className = 'py-2 text-xs font-semibold rounded-lg bg-cyber-card text-cyber-accent border border-cyber-accent/40';
+                randBtn.className = 'py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white';
+            }
+            generatePassword();
+        }
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById('pass-length').value);
+            const useUpper = document.getElementById('chk-uppercase').checked;
+            const useLower = document.getElementById('chk-lowercase').checked;
+            const useNum = document.getElementById('chk-numbers').checked;
+            const useSym = document.getElementById('chk-symbols').checked;
+
+            let password = '';
+
+            if (currentGenMode === 'readable') {
+                // Generate memorable word-based password
+                const words = ["Cyber", "Matrix", "Shield", "Cipher", "Vector", "Quantum", "Nexus", "Vortex", "Sentry", "Aegis", "Beacon", "Krypton"];
+                const syms = ["!", "@", "#", "$", "%", "&", "*"];
+                
+                while(password.length < length) {
+                    const word = words[Math.floor(Math.random() * words.length)];
+                    const num = Math.floor(Math.random() * 90) + 10;
+                    const sym = syms[Math.floor(Math.random() * syms.length)];
+                    password += word + sym + num + "-";
+                }
+                password = password.slice(0, length);
+            } else {
+                // Cryptographic Random Mode
+                const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const lower = "abcdefghijklmnopqrstuvwxyz";
+                const num = "0123456789";
+                const sym = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+                let charPool = "";
+                if (useUpper) charPool += upper;
+                if (useLower) charPool += lower;
+                if (useNum) charPool += num;
+                if (useSym) charPool += sym;
+
+                if (charPool === "") {
+                    document.getElementById('pass-output').value = "SELECT AT LEAST 1 SET";
+                    return;
+                }
+
+                // Web Crypto API for true entropy
+                const array = new Uint32Array(length);
+                window.crypto.getRandomValues(array);
+
+                for (let i = 0; i < length; i++) {
+                    password += charPool[array[i] % charPool.length];
+                }
+            }
+
+            document.getElementById('pass-output').value = password;
+            calculateStrength(password);
+        }
+
+        function calculateStrength(password) {
+            let poolSize = 0;
+            if (/[a-z]/.test(password)) poolSize += 26;
+            if (/[A-Z]/.test(password)) poolSize += 26;
+            if (/[0-9]/.test(password)) poolSize += 10;
+            if (/[^a-zA-Z0-9]/.test(password)) poolSize += 32;
+
+            if (poolSize === 0) poolSize = 1;
+
+            // Calculate entropy bits
+            const entropy = Math.floor(password.length * Math.log2(poolSize));
+            const entropyScoreEl = document.getElementById('entropy-score');
+            const timeEstEl = document.getElementById('strength-time-estimate');
+            const labelEl = document.getElementById('strength-label');
+            const meterBar = document.getElementById('strength-meter-bar');
+
+            entropyScoreEl.textContent = `Entropy: ${entropy} bits`;
+
+            if (entropy < 35) {
+                labelEl.textContent = "WEAK";
+                labelEl.className = "text-xs font-mono font-bold text-cyber-red uppercase";
+                meterBar.className = "h-full w-1/4 bg-cyber-red transition-all duration-300";
+                timeEstEl.textContent = "Time to crack: Few seconds";
+            } else if (entropy < 60) {
+                labelEl.textContent = "FAIR / MEDIUM";
+                labelEl.className = "text-xs font-mono font-bold text-cyber-yellow uppercase";
+                meterBar.className = "h-full w-2/4 bg-cyber-yellow transition-all duration-300";
+                timeEstEl.textContent = "Time to crack: ~3 Months";
+            } else if (entropy < 80) {
+                labelEl.textContent = "STRONG";
+                labelEl.className = "text-xs font-mono font-bold text-cyber-accent uppercase";
+                meterBar.className = "h-full w-3/4 bg-cyber-accent transition-all duration-300";
+                timeEstEl.textContent = "Time to crack: ~1,200 Years";
+            } else {
+                labelEl.textContent = "VERY STRONG (GOD MODE)";
+                labelEl.className = "text-xs font-mono font-bold text-cyber-green uppercase";
+                meterBar.className = "h-full w-full bg-cyber-green transition-all duration-300";
+                timeEstEl.textContent = "Time to crack: ~3.4 × 10^14 Years";
+            }
+        }
+
+        /* Copy Password Clipboard */
+        function copyPassword() {
+            const passInput = document.getElementById('pass-output');
+            if(!passInput.value || passInput.value.startsWith("SELECT")) return;
+
+            passInput.select();
+            document.execCommand('copy');
+
+            showToast("Password copied to clipboard!");
+            
+            const copyText = document.getElementById('copy-text');
+            copyText.textContent = "Copied!";
+            setTimeout(() => {
+                copyText.textContent = "Copy";
+            }, 2000);
+        }
+
+        /* Toast Popup Helper */
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
